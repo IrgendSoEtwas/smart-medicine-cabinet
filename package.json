@@ -1,0 +1,61 @@
+{
+  "name": "smart-medicine",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.58",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.6",
+    "@testing-library/user-event": "^12.8.3",
+    "axios": "^0.21.1",
+    "fontsource-roboto": "^4.0.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^10.5.4",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "prettier": "^2.2.1",
+    "react": "^17.0.2",
+    "react-countdown": "^2.3.1",
+    "react-countdown-now": "^2.1.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "use-sound": "^2.0.2",
+    "web-vitals": "^1.1.1"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
