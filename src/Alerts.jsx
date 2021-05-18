@@ -72,6 +72,10 @@ class Alerts extends React.Component {
         //this.showAlert(rows[0].scheduleId, rows[0].medName, rows[0].dose, rows[0].comment);
         //this.showAlert(35, "Vitamines", "1 Pill", "Comments here");
 
+        // clear old timer
+        this.state.timer.forEach(e => { clearTimeout(e) });
+        this.setState({ timer: [] });
+
         rows.forEach(e => {
             var time = moment(e.time, 'hh:mm');
             var diff = time.diff(moment());
@@ -122,7 +126,7 @@ class Alerts extends React.Component {
         this.setState({
             playAudio: false
           });
-      
+
           this.audio = new Audio("/alarm.mp3");
           this.audio.addEventListener('ended', function () {
             this.currentTime = 0;
@@ -135,7 +139,7 @@ class Alerts extends React.Component {
         this.setState({
             playAudio: !wasPlaying
         });
-    
+
         if (wasPlaying) {
           this.audio.pause();
         } else {
@@ -194,7 +198,7 @@ class Alerts extends React.Component {
     }
 
     missedMed(scheduleId) {
-        this.togglePlay();
+        // this.togglePlay();
         this.setState({medButtonDisabled: true})
         this.handleSuccess("Missed medication!")
         this.logMedTaken(scheduleId, false);
@@ -221,10 +225,10 @@ class Alerts extends React.Component {
                         </p>
                     </Grid>
                     <Grid item>
-                        <Button className="medButton" disabled={medButtonDisabled} onClick={() => {this.handleTakeMedicine(scheduleId)}} variant="contained" style={{ backgroundColor: "#14a37f", color: "#ffffff", marginTop: "30px", marginBottom: "10px" }} startIcon={<LocalHospital />}>Take Medicine (open cabinet)</Button>
+                        <Button className="medButton" disabled={medButtonDisabled} onClick={() => { this.handleTakeMedicine(scheduleId) }} variant="contained" style={{ backgroundColor: "#14a37f", color: "#ffffff", marginTop: "30px", marginBottom: "10px" }} startIcon={<LocalHospital />}>Take Medicine (open cabinet)</Button>
                     </Grid>
                     <Grid item>
-                        <Countdown date={countdownDate} renderer={renderer} onComplete={() => {this.missedMed(scheduleId)}} zeroPadTime={2} />
+                        <Countdown date={countdownDate} renderer={renderer} onComplete={() => { this.missedMed(scheduleId) }} zeroPadTime={2} />
                     </Grid>
                 </Grid>
 

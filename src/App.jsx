@@ -12,6 +12,15 @@ import Feedback from '@material-ui/icons/Feedback';
 import Box from '@material-ui/core/Box';
 import { withStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
+import Avatar from '@material-ui/core/Avatar';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import PersonIcon from '@material-ui/icons/Person';
+import AddIcon from '@material-ui/icons/Add';
 
 import './App.css';
 
@@ -50,13 +59,57 @@ const styles = theme => ({
   }
 });
 
+const users = [{id: 1, name: 'Steven Paul Jobs'},
+{id: 2, name: 'Angela Dorothea Merkel'},
+{id: 3, name: 'Barack Obama'}];
+
+function SimpleDialog(props) {
+  const { onClose, selectedValue, open } = props;
+
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
+  const handleListItemClick = (value) => {
+    onClose(value);
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle>Choose User</DialogTitle>
+      <List>
+        {users.map((user) => (
+          <ListItem button onClick={() => handleListItemClick(user.id)} key={user.id}>
+            <ListItemAvatar>
+              <Avatar>
+                <PersonIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={user.name} />
+          </ListItem>
+        ))}
+
+        <ListItem autoFocus button onClick={() => handleListItemClick('addAccount')}>
+          <ListItemAvatar>
+            <Avatar>
+              <AddIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Add account" />
+        </ListItem>
+      </List>
+    </Dialog>
+  );
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       patient: null, schedule: null, missed: null,
       patientId: null, setSuccess: false, successText: null,
-      sosLoading: false, sosSuccess: false, snackbarSeverity: true
+      sosLoading: false, sosSuccess: false, snackbarSeverity: true,
+      openDialog: false, selectedValue: null
     }
     this.handleSuccess = this.handleSuccess.bind(this);
     this.callSos = this.callSos.bind(this);
@@ -64,7 +117,7 @@ class App extends React.Component {
 
   componentDidMount() {
     // Change this line to change patientId
-    let patientId = 3;
+    let patientId = 2;
     this.setState({ patientId: patientId });
 
     this.retrieveSchedule(patientId);
@@ -166,7 +219,7 @@ class App extends React.Component {
         })
         this.handleSuccess("Emergency medicine granted!", true);
 
-        setTimeout(() => {this.setState({sosSuccess: false})}, 8000 )
+        setTimeout(() => { this.setState({sosSuccess: false}) }, 8000 )
       }
       else if (res.status === 209) {
         if (res.data === "BLOCKED") {
@@ -193,7 +246,7 @@ class App extends React.Component {
   }
 
   handleSuccess(text, success) {
-    this.setState({ setSuccess: true, successText: text, snackbarSeverity: success});
+    this.setState( { setSuccess: true, successText: text, snackbarSeverity: success });
     this.retrieveSchedule(this.state.patientId);
   };
 
@@ -204,8 +257,29 @@ class App extends React.Component {
     this.setState({ setSuccess: false, successText: null });
   };
 
+  handleUserOpenDialog = (value) => {
+    this.setState({ openDialog: true, selectedValue: value });
+  }
+
+  handleUserCloseDialog = (value) => {
+    this.setState({ openDialog: false });
+
+    console.log("Switching to patient with ID " + value);
+    this.switchPatient(value);
+  }
+
+  switchPatient(id) {
+    this.setState({ patientId: id, schedule: null, patient: null });
+
+    this.retrieveSchedule(id);
+    // every half hour check for new schedules
+    this.intervalID = setInterval(() => this.retrieveSchedule(id), 500 * 60 * 60);
+  }
+
   render() {
-    const { patient, schedule, missed, patientId, setSuccess, successText, sosSuccess, sosLoading, snackbarSeverity } = this.state;
+    const { patient, schedule, missed, patientId, setSuccess,
+      successText, sosSuccess, sosLoading, snackbarSeverity,
+      openDialog, selectedValue } = this.state;
     const { classes } = this.props;
 
     const buttonClassname = clsx({ [classes.buttonSuccess]: sosSuccess, [classes.sosButton]: !sosSuccess });
@@ -247,7 +321,7 @@ class App extends React.Component {
 
           <Grid item xs={12}>
             <h2 className="greetings">
-              Good {((moment().hours() < 12 && "Morning") || (moment().hours() < 18 && "Afternoon") || "Evening")}, <b>{patient.GIVENNAME}</b>!
+              Good {((moment().hours() < 12 && "Morning") || (moment().hours() < 18 && "Afternoon") || "Evening")}, <b style={{ cursor: 'pointer' }} onClick={this.handleUserOpenDialog}>{patient.GIVENNAME}</b>!
             </h2>
           </Grid>
 
@@ -279,6 +353,9 @@ class App extends React.Component {
             {successText}
           </Alert>
         </Snackbar>
+
+        {/* Dialog for user change */}
+        <SimpleDialog selectedValue={selectedValue} open={openDialog} onClose={this.handleUserCloseDialog} />
       </div>
     );
   }
