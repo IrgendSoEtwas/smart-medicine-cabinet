@@ -1,4 +1,5 @@
 # Project Smart Medicine Cabinet
+![SMC header logo](./public/header.png "Header Logo")
 
 **SMC - The Smart Medicine Cabinet**\
 as part of the course of Study: Ambient Intelligence\
